@@ -418,9 +418,9 @@ void searchAboveThresholdAndBranch(int *percent,char *Branch)
 
 void update()
 {
-	FILE *fl = fopen("students.txt","a");
+	FILE *fl = fopen("students.txt","w");
 
-	STD *ptr = hdr.nextL;
+	STD *ptr = hdr.nextR;
 
 	char line[100];
 
@@ -437,16 +437,41 @@ void update()
 		strcat(line,ptr->Branch);
 		strcat(line,"\n");
 		fprintf(fl,line);
-		ptr = ptr->nextR;
+		ptr = ptr->nextL;
 	}
 
 	fclose(fl);
 	
+	FILE *outfile; 
+      
+    // open file for writing 
+    outfile = fopen ("students.txt", "w"); 
+    if (outfile == NULL) 
+    { 
+        fprintf(stderr, "\nError opend file\n"); 
+        exit (1); 
+    } 
+  
+    struct person input1 = {1, "rohan", "sharma"}; 
+    struct person input2 = {2, "mahendra", "dhoni"}; 
+      
+    // write struct to file 
+    fwrite (&input1, sizeof(struct person), 1, outfile); 
+    fwrite (&input2, sizeof(struct person), 1, outfile); 
+      
+    if(fwrite != 0)  
+        printf("contents to file written successfully !\n"); 
+    else 
+        printf("error writing file !\n"); 
+  
+    // close file 
+    fclose (outfile); 
+
 }
 
 void updateMarksFile()
 {
-	FILE *fp = fopen("marks.txt","a");
+	FILE *fp = fopen("marks.txt","w");
 
 	STD *ptr = hdr.nextL;
 
@@ -501,4 +526,148 @@ void updateMarksFile()
 
 	fclose(fp);
 	
+}
+
+void load()
+{
+    FILE *fl = fopen("students.txt","r");
+
+    char ID[100];
+    char Name[100];
+    char Branch[100];
+    char temp[100];
+    int count = 0;
+
+    while (!feof(fl))
+    {
+        //count++;
+		strcpy(ID," ");
+        strcpy(Name," ");
+    	strcpy(Branch," ");
+   		strcpy(temp," ");
+    	fscanf(fl, "%s", temp);
+    	strcpy(temp," ");
+    	fscanf(fl, "%s", temp);
+    	strcpy(temp," ");
+    	fscanf(fl, "%s", ID);
+    	fscanf(fl, "%s", temp);
+    	strcpy(temp," ");
+    	fscanf(fl, "%s", temp);
+    	strcpy(temp," ");
+    	fscanf(fl, "%s", Name);
+       	fscanf(fl, "%s", temp);
+    	strcpy(temp," ");
+    	fscanf(fl, "%s", temp);
+    	fscanf(fl, "%s", Branch);
+    	joinLoad(ID,Name,Branch);
+		
+    }
+
+    fclose(fl);
+}
+
+void joinLoad(char *ID,char *Name,char *Branch)
+{
+	STD *new = (STD *)malloc(sizeof(STD));
+	assert(new != NULL); // Stop if problem
+    new->ID = (char *)malloc(100*sizeof(char));
+    strcpy(new->ID,ID);
+    new->Name = (char *)malloc(100*sizeof(char));
+    strcpy(new->Name,Name);
+
+    new->Branch = (char *)malloc(100*sizeof(char));
+    strcpy(new->Branch,Branch);
+
+	new->DBMS = -1;
+	new->DS = -1;
+	new->C = -1;
+	new->Total = -1;
+    new->Percent = -1;
+
+	if (hdr.nextL == NULL)
+	{
+		assert(hdr.nextR == NULL);
+		hdr.nextL = hdr.nextR = new;
+		new->nextL = new->nextR = NULL;
+		return;
+	}
+
+	assert(hdr.nextR != NULL);
+	assert(hdr.nextL->nextL == NULL);
+	hdr.nextL->nextL = new;
+	new->nextR = hdr.nextL;
+	new->nextL = NULL;
+	hdr.nextL = new;
+}
+
+int noOfLinesInFile(char *filechar)
+{
+	FILE *fileptr;
+
+    int count_lines = 0;
+
+    char chr;
+
+    fileptr = fopen(filechar, "r");
+
+   //extract character from file and store in chr
+
+    chr = getc(fileptr);
+
+    while (chr != EOF)
+
+    {
+
+        //Count whenever new line is encountered
+
+        if (chr == 'n')
+
+        {
+
+            count_lines = count_lines + 1;
+
+        }
+
+        //take next character from file.
+
+        chr = getc(fileptr);
+
+    }
+
+    fclose(fileptr); //close file.
+
+	return count_lines;
+}
+
+void Fix()
+{
+	STD *ptr = hdr.nextL;
+
+	while (ptr != NULL)
+	{
+		if(ptr->ID == " " && ptr->Name == " ")
+		{
+			if((hdr.nextL == hdr.nextR) && size() == 1)
+			{
+				hdr.nextL = hdr.nextR = NULL;
+				free(ptr);
+				break;
+			}
+            if(ptr->nextL != NULL){
+				if(hdr.nextR == ptr){
+                    hdr.nextR = ptr->nextL;
+                }
+                ptr->nextL->nextR = ptr->nextR;
+            }
+            if(ptr->nextR != NULL){    
+				if(hdr.nextL == ptr){
+                    hdr.nextL = ptr->nextR;
+                }
+                ptr->nextR->nextL = ptr->nextL;
+            }    
+            free(ptr);
+            break;	
+		}
+		ptr = ptr->nextR;
+	}	
 }

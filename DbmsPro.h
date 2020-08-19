@@ -54,3 +54,11 @@ void searchAboveThresholdAndBranch(int *,char *);
 void update();
 
 void updateMarksFile();
+
+void joinLoad(char * ,char * ,char * );
+
+void load();
+
+int noOfLinesInFile(char *filechar);
+
+void Fix();
