@@ -10,6 +10,11 @@ typedef struct STD
     char *Branch;
     struct STD *nextL;
     struct STD *nextR;
+    int DBMS;
+    int DS;
+    int C;
+    int Total;
+    int Percent;
 
 }STD;
 
@@ -27,4 +32,25 @@ void leave(char * );
 STD* leaveL();
 STD* leaveR();
 
+STD* searchById(char * );
+
+void modSTD(char *);
+
 int size();
+
+void list();
+
+void listByBranch(char *);
+void listByName(char *);
+
+void listMarksById(char *);
+
+void insertMarks(char *);
+void updateMarks(char *);
+
+void searchAboveThreshold(int* percent);
+void searchAboveThresholdAndBranch(int *,char *);
+
+void update();
+
+void updateMarksFile();
